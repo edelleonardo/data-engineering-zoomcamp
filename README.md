@@ -1,225 +1,80 @@
-# Data Engineering Zoomcamp
+# Data Engineering Zoomcamp 2023 Week 2 
+## Prefect
 
+This repo contains Python code to accompany the videos that show how to use Prefect for Data Engineering. We will create ETL workflows to extract, transform, and load your data.
 
-<p align="center">
-  <a href="https://airtable.com/shr6oVXeQvSI5HuWD"><img src="https://user-images.githubusercontent.com/875246/185755203-17945fd1-6b64-46f2-8377-1011dcb1a444.png" height="50" /></a>
-</p>
+We will use Postgres and GCP's Google Cloud Storage and BigQuery. 
 
-- Register in [DataTalks.Club's Slack](https://datatalks.club/slack.html)
-- Join the [`#course-data-engineering`](https://app.slack.com/client/T01ATQK62F8/C01FABYF2RG) channel
-- Join the [course Telegram channel with announcements](https://t.me/dezoomcamp)
-- The videos are published on [DataTalks.Club's YouTube channel](https://www.youtube.com/c/DataTalksClub) in [the course playlist](https://www.youtube.com/playlist?list=PL3MmuxUbc_hJed7dXYoJw8DoCuVHhGEQb)
-- [Frequently asked technical questions](https://docs.google.com/document/d/19bnYs80DwuUimHM65UV3sylsCn2j1vziPOwzBwQrebw/edit?usp=sharing)
+Prefect helps you observe and orchestrate your dataflows.
 
-Syllabus
+# Setup
 
-* [Week 1: Introduction & Prerequisites](#week-1-introduction--prerequisites)
-* [Week 2: Data ingestion](#week-2-data-ingestion)
-* [Week 3: Data Warehouse](#week-3-data-warehouse)
-* [Week 4: Analytics Engineering](#week-4-analytics-engineering)
-* [Week 5: Batch processing](#week-5-batch-processing)
-* [Week 6: Streaming](#week-6-streaming)
-* [Week 7, 8 & 9: Project](#week-7-8--9-project)
+## Clone the repo
 
-## Taking the course
+Clone the repo locally.
 
-### 2023 Cohort
+## Install packages
 
-* **Start**: 16 January 2023 (Monday)
-* **Registration link**: https://airtable.com/shr6oVXeQvSI5HuWD
-* Subscribe to our [public Google Calendar](https://calendar.google.com/calendar/?cid=ZXIxcjA1M3ZlYjJpcXU0dTFmaG02MzVxMG9AZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ) (it works from Desktop only)
+In a conda environment, install all package dependencies with 
 
-### Self-paced mode
+```bash
+pip install -r requirements.txt
+```
+## Start the Prefect Orion server locally
 
-All the materials of the course are freely available, so that you 
-can take the course at your own pace 
+Create another window and activate your conda environment. Start the Orion API server locally with 
 
-* Follow the suggested syllabus (see below) week by week
-* You don't need to fill in the registration form. Just start watching the videos and join Slack 
-* Check [FAQ](https://docs.google.com/document/d/19bnYs80DwuUimHM65UV3sylsCn2j1vziPOwzBwQrebw/edit?usp=sharing) if you have problems
-* If you can't find a solution to your problem in FAQ, ask for help in Slack
+```bash
+prefect orion start
+```
 
+## Set up GCP 
 
-### 2022 Cohort
+- Log in to [GCP](https://cloud.google.com/)
+- Create a Project
+- Set up Cloud Storage
+- Set up BigQuery
+- Create a service account with the required policies to interact with both services
 
-* **Start**: 17 January 2022
-* **Registration link**: https://airtable.com/shr6oVXeQvSI5HuWD
-* [Leaderboard](https://docs.google.com/spreadsheets/d/e/2PACX-1vR9oQiYnAVvzL4dagnhvp0sngqagF0AceD0FGjhS-dnzMTBzNQIal3-hOgkTibVQvfuqbQ69b0fvRnf/pubhtml)
-* Subscribe to our [public Google Calendar](https://calendar.google.com/calendar/?cid=ZXIxcjA1M3ZlYjJpcXU0dTFmaG02MzVxMG9AZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ) (it works from Desktop only)
+## Register the block types that come with prefect-gcp
 
+`prefect block register -m prefect_gcp`
 
-### Asking for help in Slack
+## Create Prefect GCP blocks
 
-The best way to get support is to use [DataTalks.Club's Slack](https://datatalks.club/slack.html). Join the [`#course-data-engineering`](https://app.slack.com/client/T01ATQK62F8/C01FABYF2RG) channel.
+Create a *GCP Credentials* block in the UI.
 
-To make discussions in Slack more organized:
+Paste your service account information from your JSON file into the *Service Account Info* block's field.
 
-* Follow [these recommendations](asking-questions.md) when asking for help
-* Read the [DataTalks.Club community guidelines](https://datatalks.club/slack/guidelines.html)
+![img.png](images/img.png)
 
+Create a GCS Bucket block in UI 
 
-## Syllabus
+Alternatively, create these blocks using code by following the templates in the [blocks](./blocks/) folder. 
 
-> **Note:** NYC TLC changed the format of the data we use to parquet. But you can still access 
-> the csv files [here](https://github.com/DataTalksClub/nyc-tlc-data).
+## Create flow code
 
-### [Week 1: Introduction & Prerequisites](week_1_basics_n_setup)
+Write your Python functions and add `@flow` and `@task` decorators. 
 
-* Course overview
-* Introduction to GCP
-* Docker and docker-compose 
-* Running Postgres locally with Docker
-* Setting up infrastructure on GCP with Terraform
-* Preparing the environment for the course
-* Homework
+Note: all code should be run from the top level of your folder to keep file paths consistent.
 
-[More details](week_1_basics_n_setup)
+## Create deployments
 
+Create and apply your deployments.
 
-### [Week 2: Data ingestion](week_2_data_ingestion)
+## Run a deployment or create a schedule
 
-* Data Lake
-* Workflow orchestration
-* Setting up Airflow locally
-* Ingesting data to GCP with Airflow
-* Ingesting data to local Postgres with Airflow
-* Moving data from AWS to GCP (Transfer service)
-* Homework
+Run a deployment ad hoc from the CLI or UI.
 
-[More details](week_2_data_ingestion)
+Or create a schedule from the UI or when you create your deployment.
 
+## Start an agent
 
-### [Week 3: Data Warehouse](week_3_data_warehouse)
+Make sure your agent set up to poll the work queue you created when you made your deployment (*default* if you didn't specify a work queue).
 
+## Later: create a Docker Image and use a DockerContainer infrastructure block
 
-* Data Warehouse
-* BigQuery
-* Partitioning and clustering
-* BigQuery best practices
-* Internals of BigQuery
-* Integrating BigQuery with Airflow
-* BigQuery Machine Learning
+Bake your flow code into a Docker image, create a DockerContainer, and your flow code in a Docker container.
 
-[More details](week_3_data_warehouse)
-
-
-### [Week 4: Analytics engineering](week_4_analytics_engineering/)
-
-* Basics of analytics engineering
-* dbt (data build tool)
-* BigQuery and dbt
-* Postgres and dbt
-* dbt models
-* Testing and documenting
-* Deployment to the cloud and locally
-* Visualizing the data with google data studio and metabase 
-
-
-[More details](week_4_analytics_engineering)
-
-
-### [Week 5: Batch processing](week_5_batch_processing)
-
-* Batch processing 
-* What is Spark
-* Spark Dataframes
-* Spark SQL
-* Internals: GroupBy and joins
-
-[More details](week_5_batch_processing)
-
-### [Week 6: Streaming](week_6_stream_processing)
-
-* Introduction to Kafka
-* Schemas (avro)
-* Kafka Streams
-* Kafka Connect and KSQL
-
-[More details](week_6_stream_processing)
-
-
-### [Week 7, 8 & 9: Project](week_7_project)
-
-Putting everything we learned to practice
-
-* Week 7 and 8: working on your project
-* Week 9: reviewing your peers
-
-[More details](week_7_project)
-
-
-## Overview
-
-### Architecture diagram
-<img src="images/architecture/arch_1.jpg"/>
-
-### Technologies
-* *Google Cloud Platform (GCP)*: Cloud-based auto-scaling platform by Google
-  * *Google Cloud Storage (GCS)*: Data Lake
-  * *BigQuery*: Data Warehouse
-* *Terraform*: Infrastructure-as-Code (IaC)
-* *Docker*: Containerization
-* *SQL*: Data Analysis & Exploration
-* *Airflow*: Pipeline Orchestration
-* *dbt*: Data Transformation
-* *Spark*: Distributed Processing
-* *Kafka*: Streaming
-
-
-### Prerequisites
-
-To get the most out of this course, you should feel comfortable with coding and command line
-and know the basics of SQL. Prior experience with Python will be helpful, but you can pick 
-Python relatively fast if you have experience with other programming languages.
-
-Prior experience with data engineering is not required.
-
-
-
-## Instructors
-
-- Ankush Khanna (https://linkedin.com/in/ankushkhanna2)
-- Sejal Vaidya (https://linkedin.com/in/vaidyasejal)
-- Victoria Perez Mola (https://www.linkedin.com/in/victoriaperezmola/)
-- Alexey Grigorev (https://linkedin.com/in/agrigorev)
-
-## Tools 
-
-For this course, you'll need to have the following software installed on your computer:
-
-* Docker and Docker-Compose
-* Python 3 (e.g. via [Anaconda](https://www.anaconda.com/products/individual))
-* Google Cloud SDK 
-* Terraform
-
-See [Week 1](week_1_basics_n_setup) for more details about installing these tools
-
-
-
-## FAQ
-
-
-* **Q**: I registered, but haven't received a confirmation email. Is it normal?
-  **A**: Yes, it's normal. It's not automated. But you will receive an email eventually 
-* **Q**: At what time of the day will it happen?
-  **A**: Office hours will happen on Mondays at 17:00 CET. But everything will be recorded, so you can watch it whenever it's convenient for you
-* **Q**: Will there be a certificate?
-  **A**: Yes, if you complete the project
-* **Q**: I'm 100% not sure I'll be able to attend. Can I still sign up?
-  **A**: Yes, please do! You'll receive all the updates and then you can watch the course at your own pace. 
-* **Q**: Do you plan to run a ML engineering course as well?
-**A**: Glad you asked. [We do](https://github.com/alexeygrigorev/mlbookcamp-code/tree/master/course-zoomcamp) :)
-* **Q**: I'm stuck! I've got a technical question!
-  **A**: Ask on Slack! And check out the [student FAQ](https://docs.google.com/document/d/19bnYs80DwuUimHM65UV3sylsCn2j1vziPOwzBwQrebw/edit?usp=sharing); many common issues have been answered already. If your issue is solved, please add how you solved it to the document. Thanks!
-
-
-
-## Supporters and partners
-
-Do you want to support our course and our community? Please reach out to [alexey@datatalks.club](alexey@datatalks.club)
-
-
-Big thanks to other communities for helping us spread the word about the course: 
-
-* [DPhi](https://dphi.tech/)
-* [MLOps.community](https://mlops.community/)
+## Optional: use Prefect Cloud for added capabilties
+Signup and use for free at https://app.prefect.cloud
