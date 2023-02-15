@@ -7,10 +7,9 @@ from datetime import timedelta
 
 
 
-@task(retries=3, cache_key_fn=task_input_hash, cache_expiration=timedelta(days=1), log_prints=True)
+@task(retries=3, cache_key_fn=task_input_hash, cache_expiration=timedelta(days=1),)
 def fetch(dataset_url: str) -> pd.DataFrame:
     "Read data from web into pandas dataframe"
-    print(color)
     df = pd.read_csv(dataset_url)
     return df
 
@@ -62,14 +61,14 @@ def etl_web_to_gcs(year: int, month: int, color: str) -> None:
 
 @flow()
 def etl_parent_flow(
-    months: list[int] = [11], year: int = 2020, color: str = "green"
+    months: list[int] = [1,2], year: int = 2021, color: str = "yellow"
 ):
     
     for month in months:
         etl_web_to_gcs(year,month,color)
 
 if __name__ == "__main__":
-    color = "green"
-    months = [11]
-    year = 2020
+    color = "yellow"
+    months = [2, 3]
+    year = 2019
     etl_parent_flow(months, year, color)
